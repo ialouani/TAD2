@@ -107,12 +107,99 @@ static void test_set_find(){
   printf("OK(6|++++8  .////): pour SET_FIND.//\n");
   return;
 }
-  
+
+static void test_adding_from_end2(){
+  DLIST dliste=set__empty();
+  add__tail(dliste,2);
+  add__tail(dliste,3);
+  add__tail(dliste,4);
+  add__head(dliste,1);
+  void impression(void* p){
+    printf("%d\t",*(int*)p);
+  }
+  debug__data(dliste,impression);
+  //clear__dliste(dliste);(genere des erreurs de valgrind;attention)
+  //clear__dliste(dliste);
+  //au lieu de faire cela (deja verifiee);on supprimera les elements un a un..
+  remove__tail(dliste);
+  debug__data(dliste,impression);
+  remove__head(dliste);
+  debug__data(dliste,impression);
+  remove__tail(dliste);
+  debug__data(dliste,impression);
+  clear__dliste(dliste);
+  printf("OK(9+10( &    )) for adding/removing element from set's end.\n");
+  return;
+}
+
+//rq: une fonction en static void designe le fait qu'elle est relatif a la
+//classe seulement ; elle est pas parmi les methodes d'heritage au niveau
+//des objets instanciés par la classe. (pensons a la fonction constructor
+//sur un 'this')
+//C'EST ~la particularite de la classe. (~ au niveau de PLUSIEURS cas)
+
+static void test_adding_after_1(){
+  DLIST dliste=set__empty();
+  struct block* inter1=dliste->tete;
+  add__after_elmnt(dliste,inter1,1);
+  add__tail(dliste,2);
+  add__head(dliste,3);
+  void impression(void* p){
+    printf("%d\t",*(int*)p);
+  }
+  debug__data(dliste,impression);
+  struct block* inter2=dliste->tete->next;
+  add__after_elmnt(dliste,inter2,4);
+  assert(dliste->tete->data==0);
+  assert(dliste->tete->next->data==3);
+  assert(dliste->tete->next->next->data==4);
+  assert(dliste->tete->next->next->next->data==1);
+  assert(dliste->tete->next->next->next->next->data==2);
+  assert(dliste->tete->next->next->next->next->next==NULL);
+  assert(dliste->tete->prev==NULL);
+  debug__data(dliste,impression);
+  add__after_elmnt(dliste,dliste->tete->next->next,5);//3 4 5 1 2
+  debug__data(dliste,impression);
+  clear__dliste(dliste);
+  printf("OK pour |11|: adding after an allocated in request encapsulation data.!!\n");
+  /*clear__dliste(dliste);*/
+  return;
+}
+
+static void test_removing_after_2(){
+  void impression(void* p){
+    printf("%d\t",*(int*)p);
+  }
+  DLIST dliste=set__empty();
+  add__head(dliste,2);
+  add__tail(dliste,3);
+  add__tail(dliste,4);
+  add__tail(dliste,5);
+  add__head(dliste,1);
+  debug__data(dliste,impression);
+  struct block* inter_1=dliste->tete->next->next;
+  remove__after_elmnt(dliste,inter_1);
+  debug__data(dliste,impression);
+  struct block* inter_2=dliste->tete->next;
+  remove__after_elmnt(dliste,inter_2);
+  debug__data(dliste,impression);
+  struct block* inter_3=dliste->tete->next->next;
+  remove__head(dliste);
+  remove__after_elmnt(dliste,inter_3);
+  debug__data(dliste,impression);
+  clear__dliste(dliste);
+  printf("OK pour le dernier <<12>>: removing after an 'element'..///\n");
+  return;
+}
+
 int main(int argc, char* argv[]){
   test_set_empty();
   test_add_remove__HEAD();
   test_set_size();
   test_debug_data();
   test_set_find();
+  test_adding_from_end2();
+  test_adding_after_1();
+  test_removing_after_2();
   return 0;
 }

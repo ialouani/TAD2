@@ -30,11 +30,11 @@ void add__head(DLIST dliste, int b);
 void remove__head(DLIST dliste);
 void clear__dliste(DLIST);
 
-/*void add__tail(DLIST dliste, int b);
+void add__tail(DLIST dliste, int b);
 void remove__tail(DLIST dliste);
 
 void add__after_elmnt(DLIST,struct block*,int);
-void remove__after_elmnt(DLIST,struct block*,int);*/
+void remove__after_elmnt(DLIST,struct block*);
 
 #endif
 //~Inversement, on commencera par implementer le groupe 2 puis le groupe 3

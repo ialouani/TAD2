@@ -12,5 +12,7 @@ build: test_all
 	./test_all
 valgrind_check: test_all
 	valgrind --leak-check=full ./test_all
+debugguage_avance: test_all
+	gdb ./test_all
 clean:
 	rm -f *.c~ Makefile~ *.o test_all *.h~

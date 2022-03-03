@@ -142,37 +142,147 @@ void clear__dliste(DLIST dliste){
   }
 }
 
+void add__tail(DLIST dliste, int b){
+  if(set__is_empty(dliste)){
+    add__head(dliste,b);return;}
+  else{
+    struct block* temp2=dliste->tete;
+    struct block* temp=dliste->tete;
+    //temp->next!=NULL
+    while(temp->next!=NULL){
+      temp2=temp;
+      temp=temp->next;
+    }
+    //*temp2 est l'encapsulation qui represente l'avant dernier block.
+    struct block* addf=(struct block*)malloc(sizeof(*addf));
+    addf->data=b;
+    addf->prev=NULL;
+    addf->next=NULL;
+    //prise en compte de l'encapsulation precedente.
+    temp->next=addf;
+    addf->prev=temp2->next;
+    return;
+  }
+}
+
+void remove__tail(DLIST dliste){
+  if(set__is_empty(dliste)){
+    fprintf(stdout,"Error(2): Problem of removing from an empty set!\n");   
+    exit(2);
+  }
+  else{
+    struct block* temp2=dliste->tete;
+    struct block* temp=dliste->tete;
+    while(temp->next!=NULL){
+      temp2=temp;
+      temp=temp->next;
+    }
+    //temp represente le dernier block et temp2 l'avant dernier block.
+    //si set__size(dliste)==1 alors: temp2 represente l'encapsulation de
+    //depart 0 et temp represente l'encapsulation qui suit cette derniere.
+    unsigned int len=set__size(dliste);
+    if(len==1){
+      //juste pour se convaincre que dans ce cas: temp ne represente pas
+      //un vrai element.
+      temp2->next=NULL;
+      //temp->prev=NULL;
+      temp->prev=NULL;
+      //temp devient un block sans chainage derriere ou d'avant.
+      free(temp);return;
+    }
+    else{//len>1
+      //temp2 ne sera pas une correspondance de block nul.((nil))
+      temp2->next=NULL;
+      temp->prev=NULL;
+      free(temp);
+      return;
+    }
+  }
+}
+
+void add__after_elmnt(DLIST dliste, struct block* after, int d){
+  if(set__is_empty(dliste) && after->data==0 && after->next==NULL && after->prev==NULL){
+    add__head(dliste,d);return;
+  }
+  else if(!set__is_empty(dliste) && set__size(dliste)==1){
+    if(after==dliste->tete){
+      add__head(dliste,d);
+    }
+    else{
+      add__tail(dliste,d);
+    }
+    return;
+  }//pour savoir les add_head/remove quand ils se manifestent.
+  else{//size>=2 donc si on prend 2 temp2 et temp
+    //avec une boucle de parcours ; temp2 ne renfermera la fleche vers
+    //un element de type int nulle(--valeur).
+    struct block* temp2;
+    struct block* temp=dliste->tete->next;
+    while(temp!=after){
+      temp=temp->next;
+      //temp2=temp->next;
+    }
+    temp2=temp->next;//temp->next existe au plus NULL.
+    if(temp2!=NULL){
+    //a la sortie: temp=after
+    //et: temp2 correspond a l'element qui suit after.
+    struct block* add0=(struct block*)malloc(sizeof(*add0));
+    add0->data=d;
+    add0->prev=NULL;
+    add0->next=NULL;
+    add0->prev=temp;add0->next=temp->next;
+    //temp->next=add0;//add0->prev=temp;
+    //temp2->prev=add0;//add0->next=temp2;
+    temp->next=add0;temp2->prev=add0;
+    return;}
+    else{//temp2==NULL(<=>after->next==NULL) donc after correspond au dernier element.
+      add__tail(dliste,d);return;
+    }
+  }
+}
+
+void remove__after_elmnt(DLIST dliste, struct block* after){
+  if(!set__find(dliste,after->data) || set__is_empty(dliste)){
+    fprintf(stdout,"Operation impossible, a verifier les frees(<1) avant au pire.\n");
+    exit(3);
+  }
+  else if(set__size(dliste)==1){
+    remove__tail(dliste);return;}
+  else{//size>=2
+    struct block* temp=dliste->tete;//on generalise..
+    while(temp!=after){
+      temp=temp->next;
+    }//a la sortie, on a temp==after.
+    if(temp->next==NULL){//<=>temp pointe vers le dernier element.
+      return;//impossible de supprimer ; il y a rien apres a SUPPRIMER.
+    }
+    else{//au moins temp se situe dans l'avant derniere position.
+      if(temp->next->next==NULL){//ca revient au cas de ''base''
+	//impliquant l'application de la fonction: remove__tail
+	remove__tail(dliste);return;}
+      else{
+	//temp se situe logiquement(pour le point1) a la deuxieme position
+	//au niveau des encapsulations + le fait que on a au minimum
+	//2 elements in front of that.
+	struct block* temp2=temp->next->next;
+	struct block* temp_that_has_to_be_removed=temp->next;
+	temp->next=temp2;temp2->prev=temp;
+	temp_that_has_to_be_removed->prev=NULL;
+	temp_that_has_to_be_removed->next=NULL;
+	free(temp_that_has_to_be_removed);
+	return;
+      }
+    }
+  }
+}
 
 
 
 
-  
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	  
 
 
     
-    
-
-
-
-
